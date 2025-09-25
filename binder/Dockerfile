@@ -12,19 +12,41 @@ RUN cd ${HOME}/libs/giskardpy && git checkout 8b955e3fba81d8878bea06aca6ead6c3cd
 RUN cd ${HOME}/libs/giskardpy && pip3 install -r requirements.txt && pip3 install -e .
 
 # Initiate ROS workspace
-ENV ROS_WS=${HOME}/workspace/ros
+USER $NB_USER
+# Initiate ROS workspace
+ENV ROS_WS=/home/${NB_USER}/workspace/ros
 WORKDIR ${ROS_WS}/src
 # A Workaround for fixing the issue of RvizWeb loading meshes with "file:///" path instead of "package:///".
-#COPY --chown=${NB_USER}:users binder/me ${ROS_WS}/src/me
+COPY --chown=${NB_USER}:users binder/me ${ROS_WS}/src/me
 #COPY --chown=${NB_USER}:users launch/mujoco_config ${ROS_WS}/src/me/config
-#COPY --chown=${NB_USER}:users binder/noetic.rosinstall /home/${NB_USER}/noetic.rosinstall
-RUN wstool merge ${HOME}/noetic.rosinstall \
+COPY --chown=${NB_USER}:users binder/noetic.rosinstall /home/${NB_USER}/noetic.rosinstall
+RUN wstool merge /home/${NB_USER}/noetic.rosinstall \
   && wstool update
+
+# Install dependencies
+WORKDIR  ${ROS_WS}
+USER root
+RUN rosdep update --include-eol-distros && apt update && apt dist-upgrade -y \
+  && rosdep install -y --ignore-src --from-paths ./ -r \
+  && rosdep fix-permissions \
+  && apt install -y ffmpeg libglfw3 libglfw3-dev
+USER ${NB_USER}
+
+# Building Custom bullet3 from source with Python 3.10 (in a clumsy way)
+WORKDIR /home/${NB_USER}
+RUN git clone https://github.com/pybind/pybind11.git \
+  && cd pybind11 \
+  && mkdir build \
+  && cd build \
+  && cmake .. -DCMAKE_BUILD_TYPE=Release -DPYBIND11_PYTHON_VERSION=3 -DPYBIND11_TEST=OFF
+USER root
+RUN cd pybind11/build && make install
+USER ${NB_USER}
 
 RUN cd ${HOME}/libs
 RUN git clone https://github.com/SemRoCo/bullet3.git
-RUN cd bullet3 && ./build_cmake_pybullet_3.10_double.sh
-ENV PYTHONPATH=${PYTHONPATH}:${HOME}/bullet3/build_cmake/better_python:${HOME}/bullet3/examples/pybullet
+RUN cd bullet3 && ./build_cmake_pybullet_3.8_double.sh
+ENV PYTHONPATH=${PYTHONPATH}:${HOME}/libs/bullet3/build_cmake/better_python:${HOME}/libs/bullet3/examples/pybullet
 
 # Compile the ROS workspace
 WORKDIR ${ROS_WS}
