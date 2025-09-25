@@ -4,22 +4,37 @@ FROM intel4coro/base-notebook:noetic
 # Path to the default ROS workspace
 ENV ROS_WS=${HOME}/workspace/ros
 
-#============= Install extra software packages =============#
-# Examples:
-# RUN apt update && apt install -y curl
-# RUN pip install numpy
-#===========================================================#
+### Install Dependencies ###
 
-# Copy content to the image
-ENV REPO_DIR=${HOME}/work
-WORKDIR ${REPO_DIR}
-COPY --chown=${NB_USER}:users . ${REPO_DIR}/
-RUN git config --global --add safe.directory ${REPO_DIR}
+# install giskardpy library
+RUN mkdir -p ${HOME}/libs && cd ${HOME}/libs && git clone -b giskard_library https://github.com/SemRoCo/giskardpy.git
+RUN cd ${HOME}/libs/giskardpy && git checkout 8b955e3fba81d8878bea06aca6ead6c3cda47af1
+RUN pip3 install -r requirements.txt && pip3 install -e .
+# Initiate ROS workspace
+ENV ROS_WS=${HOME}/workspace/ros
+WORKDIR ${ROS_WS}/src
+# A Workaround for fixing the issue of RvizWeb loading meshes with "file:///" path instead of "package:///".
+#COPY --chown=${NB_USER}:users binder/me ${ROS_WS}/src/me
+#COPY --chown=${NB_USER}:users launch/mujoco_config ${ROS_WS}/src/me/config
+#COPY --chown=${NB_USER}:users binder/noetic.rosinstall /home/${NB_USER}/noetic.rosinstall
+RUN wstool merge ${HOME}/noetic.rosinstall \
+  && wstool update
 
-# Create a symbolic link to the ROS workspace under the working directory
-RUN ln -s ${ROS_WS} ${PWD}/ROS_WS
+RUN cd ${HOME}/libs
+RUN git clone https://github.com/SemRoCo/bullet3.git
+RUN cd bullet3 && ./build_cmake_pybullet_3.10_double.sh
+ENV PYTHONPATH=${PYTHONPATH}:${HOME}/bullet3/build_cmake/better_python:${HOME}/bullet3/examples/pybullet
 
-# The entrypoint of the docker image
-COPY --chown=${NB_USER}:users binder/entrypoint.sh /entrypoint.sh
+# Compile the ROS workspace
+WORKDIR ${ROS_WS}
+RUN catkin build
+
+ENV DISABLE_ROS1_EOL_WARNINGS=1
+
+### Launch JupyterLab ###
+
+# jupyterlab interface configuration
+COPY --chown=${NB_USER}:users binder/webapps.json ${ROS_WS}/src/rvizweb/webapps/app.json
+COPY --chown=${NB_USER}:users binder/entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
-
+CMD ["start-notebook.sh"]
