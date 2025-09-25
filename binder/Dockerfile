@@ -9,7 +9,8 @@ ENV ROS_WS=${HOME}/workspace/ros
 # install giskardpy library
 RUN mkdir -p ${HOME}/libs && cd ${HOME}/libs && git clone -b giskard_library https://github.com/SemRoCo/giskardpy.git
 RUN cd ${HOME}/libs/giskardpy && git checkout 8b955e3fba81d8878bea06aca6ead6c3cda47af1
-RUN pip3 install -r requirements.txt && pip3 install -e .
+RUN cd ${HOME}/libs/giskardpy && pip3 install -r requirements.txt && pip3 install -e .
+
 # Initiate ROS workspace
 ENV ROS_WS=${HOME}/workspace/ros
 WORKDIR ${ROS_WS}/src
