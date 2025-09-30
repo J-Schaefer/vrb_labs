@@ -1,0 +1,7 @@
+gitpython>=3.1.37
+pybullet~=3.2.5
+rospkg~=1.4.0
+roslibpy~=1.2.1
+rospy~=1.17.4
+pathlib~=1.0.1
+numpy>=1.21.1

@@ -34,7 +34,7 @@ WORKDIR ${ROS_WS}
 USER ${NB_USER}
 COPY --chown=${NB_USER}:users binder/requirements.txt ${ROS_WS}/requirements.txt
 RUN pip install -r src/giskardpy_ros/requirements.txt
-RUN pip install -r src/me/requirements.txt
+RUN pip install -r ./requirements.txt
 
 # Building Custom bullet3 from source with Python 3.10 (in a clumsy way)
 WORKDIR /home/${NB_USER}
