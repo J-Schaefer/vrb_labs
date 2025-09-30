@@ -41,4 +41,4 @@
 - git:
     local-name: robotiq
     uri: https://github.com/TAMS-Group/robotiq.git
-    version:noetic-devel
+    version: noetic-devel
