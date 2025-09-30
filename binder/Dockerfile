@@ -32,6 +32,7 @@ RUN rosdep update --include-eol-distros && apt update && apt dist-upgrade -y \
   && apt install -y ffmpeg libglfw3 libglfw3-dev
 WORKDIR ${ROS_WS}
 USER ${NB_USER}
+COPY --chown=${NB_USER}:users binder/requirements.txt ${ROS_WS}/requirements.txt
 RUN pip install -r src/giskardpy_ros/requirements.txt
 RUN pip install -r src/me/requirements.txt
 
