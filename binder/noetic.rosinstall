@@ -30,11 +30,11 @@
     local-name: iai_maps
     uri: https://github.com/code-iai/iai_maps.git
     version: master
--git:
+- git:
     local-name: iai_tracy
     uri: https://github.com/code-iai/iai_tracy.git
     version: main
--git:
+- git:
     local-name: universal_robot
     uri: https://github.com/ros-industrial/universal_robot.git
     version: main
