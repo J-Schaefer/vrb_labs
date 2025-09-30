@@ -65,7 +65,7 @@ COPY --chown=${NB_USER}:users . ${REPO_DIR}/
 RUN git config --global --add safe.directory ${REPO_DIR}
 
 # Create a symbolic link to the ROS workspace under the working directory
-RUN ln -s ${ROS_WS} ${PWD}/ROS_WS
+RUN ln -s ${ROS_WS} ${PWD}/workspace
 
 ### Launch JupyterLab ###
 
