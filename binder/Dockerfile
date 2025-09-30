@@ -58,6 +58,15 @@ RUN catkin build
 
 ENV DISABLE_ROS1_EOL_WARNINGS=1
 
+# Copy content to the image
+ENV REPO_DIR=${HOME}/work
+WORKDIR ${REPO_DIR}
+COPY --chown=${NB_USER}:users . ${REPO_DIR}/
+RUN git config --global --add safe.directory ${REPO_DIR}
+
+# Create a symbolic link to the ROS workspace under the working directory
+RUN ln -s ${ROS_WS} ${PWD}/ROS_WS
+
 ### Launch JupyterLab ###
 
 # jupyterlab interface configuration
