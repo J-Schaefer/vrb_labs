@@ -37,4 +37,4 @@
 - git:
     local-name: universal_robot
     uri: https://github.com/ros-industrial/universal_robot.git
-    version: main
+    version: noetic-devel
