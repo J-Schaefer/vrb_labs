@@ -5,3 +5,4 @@ roslibpy~=1.2.1
 # rospy~=1.14.11
 pathlib~=1.0.1
 numpy>=1.21.1
+pydot
