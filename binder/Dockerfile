@@ -32,7 +32,7 @@ RUN rosdep update --include-eol-distros && apt update && apt dist-upgrade -y \
   && apt install -y ffmpeg libglfw3 libglfw3-dev
 WORKDIR ${ROS_WS}
 USER ${NB_USER}
-RUN pip install -r src/giskardpy/requirements.txt
+RUN pip install -r src/giskardpy_ros/requirements.txt
 RUN pip install -r src/me/requirements.txt
 
 # Building Custom bullet3 from source with Python 3.10 (in a clumsy way)
