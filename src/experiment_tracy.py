@@ -12,6 +12,7 @@ from copy import deepcopy
 import rospy
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import PoseStamped, Quaternion, Point
+from std_msgs.msg import ColorRGBA
 
 # Giskard Imports
 from giskardpy.utils.math import quaternion_from_rotation_matrix
@@ -52,6 +53,12 @@ default_r_pose_cartesian.pose.orientation = Quaternion(*quaternion_from_rotation
                                                                                          [0, 1, 0, 0],
                                                                                          [0, 0, -1, 0],
                                                                                          [0, 0, 0, 1]]))
+
+# Colors for visualization
+# Color1 (RGBA: red, fully opaque)
+color_red = ColorRGBA(234 / 255.0, 79 / 255.0, 61 / 255.0, 1.0)
+# Color2 (RGBA: lime green, fully opaque)
+color_lime = ColorRGBA(198 / 255.0, 224 / 255.0, 112 / 255.0, 1.0)
 
 
 def choose_gripper(pose, l_gripper_pose, r_gripper_pose, dual_heuristic: bool = False) -> Tuple[str, PoseStamped]:
