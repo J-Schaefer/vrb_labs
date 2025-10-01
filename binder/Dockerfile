@@ -38,19 +38,20 @@ RUN pip install -r ./requirements.txt
 
 # Building Custom bullet3 from source with Python 3.10 (in a clumsy way)
 WORKDIR /home/${NB_USER}
-RUN git clone https://github.com/pybind/pybind11.git \
+RUN cd libs \
+  && git clone https://github.com/pybind/pybind11.git \
   && cd pybind11 \
   && mkdir build \
   && cd build \
   && cmake .. -DCMAKE_BUILD_TYPE=Release -DPYBIND11_PYTHON_VERSION=3 -DPYBIND11_TEST=OFF
 USER root
-RUN cd pybind11/build && make install
+RUN cd libs/pybind11/build && make install
 USER ${NB_USER}
 
-RUN cd ${HOME}/libs
-RUN git clone https://github.com/SemRoCo/bullet3.git
-RUN cd bullet3 && ./build_cmake_pybullet_3.8_double.sh
-ENV PYTHONPATH=${PYTHONPATH}:${HOME}/libs/bullet3/build_cmake/better_python:${HOME}/libs/bullet3/examples/pybullet
+RUN cd ${HOME}/libs && git clone https://github.com/SemRoCo/bullet3.git
+COPY --chown=${NB_USER}:users binder/build_cmake_pybullet_3.10_double.sh /home/${NB_USER}/libs/bullet3/
+RUN cd libs/bullet3 && ./build_cmake_pybullet_3.10_double.sh
+ENV PYTHONPATH=${PYTHONPATH}:/home/${NB_USER}/libs/bullet3/build_cmake/better_python:/home/${NB_USER}/libs/bullet3/examples/pybullet
 
 # Compile the ROS workspace
 WORKDIR ${ROS_WS}

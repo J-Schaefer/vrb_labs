@@ -12,11 +12,11 @@ services:
     # user: root
     working_dir: /home/jovyan
     command: jupyter lab --allow-root --NotebookApp.token='' --no-browser --ip=0.0.0.0
-    entrypoint: ["/home/jovyan/giskard_examples/binder/entrypoint.sh"]
+    entrypoint: ["/home/jovyan/work/binder/entrypoint.sh"]
     ports:
       - 8888:8888
     volumes:
       - ../:/home/jovyan/work:rw
-      # - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
     # environment:
     #   - DISPLAY
